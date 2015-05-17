@@ -1,0 +1,30 @@
+[misc]
+
+# display_name defines how the user is displayed on mumble
+#   %A = Alliance Ticker
+#   %C = Corporation Ticker
+#   %N = Character Name
+#
+# Examples:
+# "<%A>[%C] %N"	--> "<BRAVE>[SB00N] kiu Nakamura"
+# "%N - (%C)" 	--> "kiu Nakamura - (SB00N)"
+#
+display_name = <%A>[%C] %N
+
+# restrict_access_by_ticker defines access restrictions
+#   0 = Anyone can join
+#   1 = Users can only join if either their corporation or alliance ticker is configured in the database
+#   2 = Users can only join if their corporation and alliance ticker is configured in the database
+#
+# IMPORTANT: This settings needs to be in sync with config.php
+#
+restrict_access_by_ticker = 0
+
+[murmur]
+server_id = 1
+
+[mysql]
+sql_host = 127.0.0.1
+sql_user = root
+sql_pass = root
+sql_name = mumble-sso
