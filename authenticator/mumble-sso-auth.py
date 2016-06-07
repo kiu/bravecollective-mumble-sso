@@ -4,9 +4,13 @@ import os, sys, time, re
 import MySQLdb, ConfigParser
 
 import Ice
-Ice.loadSlice('/usr/share/slice/Murmur.ice')
+#Ice.loadSlice('/usr/share/slice/Murmur.ice')
+
+Ice.loadSlice("--all -I/usr/share/Ice-3.5.1/slice/ /usr/share/slice/Murmur.ice")
+
 # ^ Sometimes the import of ice files fail. Try enforce an include path like that:
 # Ice.loadSlice("--all -I/usr/share/Ice-3.5.1/slice/ /usr/share/slice/Murmur.ice")
+
 import Murmur
 
 # -------------------------------------------------------------------------------
@@ -94,7 +98,7 @@ class ServerAuthenticatorI(Murmur.ServerUpdatingAuthenticator):
 # ---- Check Bans
 
 		c = db.cursor(MySQLdb.cursors.DictCursor)
-		c.execute("SELECT * FROM ban WHERE filter = %s", ('alliance-' + str(alliance_id)))
+		c.execute("SELECT * FROM ban WHERE filter = %s", ('alliance-' + str(alliance_id),))
 		row = c.fetchone()
 		c.close()
 
@@ -103,7 +107,7 @@ class ServerAuthenticatorI(Murmur.ServerUpdatingAuthenticator):
 		    return (-1, None, None)
 
 		c = db.cursor(MySQLdb.cursors.DictCursor)
-		c.execute("SELECT * FROM ban WHERE filter = %s", ('corporation-' + str(corporation_id)))
+		c.execute("SELECT * FROM ban WHERE filter = %s", ('corporation-' + str(corporation_id),))
 		row = c.fetchone()
 		c.close()
 
@@ -112,7 +116,7 @@ class ServerAuthenticatorI(Murmur.ServerUpdatingAuthenticator):
 		    return (-1, None, None)
 
 		c = db.cursor(MySQLdb.cursors.DictCursor)
-		c.execute("SELECT * FROM ban WHERE filter = %s", ('character-' + str(character_id)))
+		c.execute("SELECT * FROM ban WHERE filter = %s", ('character-' + str(character_id),))
 		row = c.fetchone()
 		c.close()
 
@@ -123,17 +127,17 @@ class ServerAuthenticatorI(Murmur.ServerUpdatingAuthenticator):
 # ---- Retrieve tickers
 
 		c = db.cursor(MySQLdb.cursors.DictCursor)
-		c.execute("SELECT * FROM ticker WHERE filter = %s", ('alliance-' + str(alliance_id)))
+		c.execute("SELECT * FROM ticker WHERE filter = %s", ('alliance-' + str(alliance_id),))
 		rowa = c.fetchone()
 		c.close()
 
 		c = db.cursor(MySQLdb.cursors.DictCursor)
-		c.execute("SELECT * FROM ticker WHERE filter = %s", ('corporation-' + str(corporation_id)))
+		c.execute("SELECT * FROM ticker WHERE filter = %s", ('corporation-' + str(corporation_id),))
 		rowc = c.fetchone()
 		c.close()
 
-		ticker_alliance = '-----' if not rowa else rowa['text'];
-		ticker_corporation = '-----' if not rowc else rowc['text'];
+		ticker_alliance = '' if not rowa else rowa['text'];
+		ticker_corporation = '' if not rowc else rowc['text'];
 
 		if restrict_access_by_ticker == '1' and not (rowa or rowc):
 		    print("Fail: {0} access requires one known ticker: {1} {2} {3} / {4} {5} {6}").format(name, corporation_id, ticker_corporation, corporation_name, alliance_id, ticker_alliance, alliance_name)
@@ -155,7 +159,7 @@ class ServerAuthenticatorI(Murmur.ServerUpdatingAuthenticator):
 		return (character_id, nick, groups)
 
 	    except Exception, e:
-		print("Fail: {0}".format(e))
+		print("EX-Fail: {0}".format(e))
 		return (-1, None, None)
 	    finally:
 		if db:
@@ -220,7 +224,7 @@ if __name__ == "__main__":
 		if(server.id() != server_id):
 			continue
 
-		print("Binding to server: {0} {1}".format(id, server))
+		print("Binding to server #{0}:  {1}".format(server_id, server))
 		serverR = Murmur.ServerUpdatingAuthenticatorPrx.uncheckedCast(adapter.addWithUUID(ServerAuthenticatorI(server, adapter)))
 		server.setAuthenticator(serverR)
 		break
