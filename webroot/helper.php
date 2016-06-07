@@ -150,7 +150,7 @@ function sso_update() {
 	$_SESSION['error_message'] = 'Failed to retrieve character details.';
 	return false;
     }
-    $apiInfo = new SimpleXMLElement($result);
+    $apiInfo = new \SimpleXMLElement($result);
     $row = $apiInfo->result->rowset->row->attributes();
 
     $character_name = (string)$row->characterName;
